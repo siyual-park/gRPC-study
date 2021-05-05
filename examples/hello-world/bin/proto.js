@@ -9,6 +9,8 @@ const PROTO_DIR = path.join(__dirname, "../proto");
 const MODEL_DIR = path.join(__dirname, "../generated");
 const PROTOC_GEN_TS_PATH = path.join(__dirname, "../", "../", "../node_modules/.bin/protoc-gen-ts");
 
+shell.exec(`mkdir ${MODEL_DIR}`)
+
 rimraf.sync(`${MODEL_DIR}/*`);
 
 const protoConfig = [
