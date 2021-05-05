@@ -9,9 +9,16 @@ function main() {
   });
 
   server.addService(EmployeeService, new Employee());
-  server.bindAsync("0.0.0.0:4500", ServerCredentials.createInsecure(), () => {
-    server.start();
-  });
+  server.bindAsync(
+    "0.0.0.0:50051",
+    ServerCredentials.createInsecure(),
+    (error) => {
+      if (error != null) {
+        throw error;
+      }
+      server.start();
+    }
+  );
 }
 
 main();

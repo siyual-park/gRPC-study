@@ -9,6 +9,7 @@
   "scripts": {
     "test": "jest",
     "start:server": "node dist/server.js",
+    "start:client": "node dist/client.js",
     "prebuild": "npm run build:proto",
     "build": "npm run clean && npm run compile",
     "build:proto": "node bin/proto",

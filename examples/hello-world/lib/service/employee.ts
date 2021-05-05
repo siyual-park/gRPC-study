@@ -6,7 +6,11 @@ import {
 import _ from "lodash";
 import jsonfile from "jsonfile";
 import path from "path";
-import { EmployeeRequest, EmployeeResponse } from "../../generated/employee_pb";
+import {
+  EmployeeDetails,
+  EmployeeRequest,
+  EmployeeResponse,
+} from "../../generated/employee_pb";
 import { IEmployeeServer } from "../../generated/employee_grpc_pb";
 
 class Employee implements IEmployeeServer {
@@ -21,7 +25,17 @@ class Employee implements IEmployeeServer {
     callback: sendUnaryData<EmployeeResponse>
   ): void {
     const response = new EmployeeResponse();
-    response.setMessage(_.find(this.data, { id: call.request.getId() }));
+
+    const employee = _.find(this.data, { id: call.request.getId() });
+    const employeeDetails = new EmployeeDetails();
+    if (employee != null) {
+      employeeDetails.setId(employee.id);
+      employeeDetails.setEmail(employee.email);
+      employeeDetails.setFirstname(employee.firstname);
+      employeeDetails.setLastname(employee.lastname);
+    }
+
+    response.setMessage(employeeDetails);
 
     callback(null, response);
   }
