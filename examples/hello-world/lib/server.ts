@@ -1,43 +1,17 @@
-import path from "path";
-import _ from "lodash";
-import grpc, { ProtobufMessage, sendUnaryData, ServerUnaryCall } from "grpc";
-import * as protoLoader from "@grpc/proto-loader";
-import jsonfile from "jsonfile";
-import {
-  EmployeeRequest,
-  EmployeeResponse,
-} from "../generated/proto/employee_pb";
-
-const data = jsonfile.readFileSync("./data.json");
-
-const PROTO_PATH = path.join(__dirname, "../", "./proto/employee.proto");
-
-const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
-});
-
-const employeeProto = grpc.loadPackageDefinition(packageDefinition).employee;
-
-function getDetails(
-  call: ServerUnaryCall<EmployeeRequest.AsObject>,
-  callback: sendUnaryData<EmployeeResponse.AsObject>
-) {
-  callback(null, {
-    message: _.find(data, { id: call.request.id }),
-  });
-}
+import { Server, ServerCredentials } from "@grpc/grpc-js";
+import { EmployeeService } from "../generated/employee_grpc_pb";
+import { Employee } from "./service";
 
 function main() {
-  const server = new grpc.Server();
-  server.addService((employeeProto as ProtobufMessage).Employee.service, {
-    getDetails,
+  const server = new Server({
+    "grpc.max_receive_message_length": -1,
+    "grpc.max_send_message_length": -1,
   });
-  server.bind("0.0.0.0:4500", grpc.ServerCredentials.createInsecure());
-  server.start();
+
+  server.addService(EmployeeService, new Employee());
+  server.bindAsync("0.0.0.0:4500", ServerCredentials.createInsecure(), () => {
+    server.start();
+  });
 }
 
 main();

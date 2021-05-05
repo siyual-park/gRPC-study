@@ -118,4 +118,4 @@ dist
 # intelliJ
 .idea/
 
-generated/proto
+generated
